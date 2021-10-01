@@ -1,26 +1,8 @@
-//! An example of an escrow program, inspired by PaulX tutorial seen here
-//! https://paulx.dev/blog/2021/01/14/programming-on-solana-an-introduction/
-//! This example has some changes to implementation, but more or less should be the same overall
-//! Also gives examples on how to use some newer anchor features and CPI
-//!
-//! User (Initializer) constructs an escrow deal:
-//! - SPL token (X) they will offer and amount
-//! - SPL token (Y) count they want in return and amount
-//! - Program will take ownership of initializer's token X account
-//!
-//! Once this escrow is initialised, either:
-//! 1. User (Taker) can call the exchange function to exchange their Y for X
-//! - This will close the escrow account and no longer be usable
-//! OR
-//! 2. If no one has exchanged, the initializer can close the escrow account
-//! - Initializer will get back ownership of their token X account
-
 use anchor_lang::prelude::*;
 use anchor_spl::token::Mint;
 use anchor_spl::token::{self, Token, TokenAccount, Transfer};
-//use spl_token::instruction::AuthorityType;
 
-declare_id!("Fg6PaFpoGXkYsidMpWTK6W2BeZ7FEfcYkg476zPFsLnS");
+declare_id!("BVn1pCovTMx6UHEVcCjXJN1h4E7KA8G6EyZtydaSzpu8");
 
 #[program]
 pub mod escrow {
@@ -46,6 +28,7 @@ pub mod escrow {
         escrow_account.taker_amount = taker_amount;
 
         token::transfer(ctx.accounts.into_transfer_to_deposit(), deposit_amount)?;
+
         Ok(())
     }
 
@@ -74,7 +57,7 @@ pub mod escrow {
             ctx.accounts
                 .into_transfer_to_taker_context()
                 .with_signer(&[&seeds[..]]),
-            ctx.accounts.deposit_token_account.amount, // We have checked amount above so we deplete the amount so token account can always be closed
+            ctx.accounts.deposit_token_account.amount, // We have checked amount above so we deplete the amount so the token account can always be closed
         )?;
 
         token::transfer(
@@ -93,7 +76,7 @@ pub struct InitializeEscrow<'info> {
     #[account(mut)]
     pub initializer: Signer<'info>,
     #[account(mut)]
-    pub initializer_deposit_token_account: Account<'info, TokenAccount>,
+    pub initializer_token_account: Account<'info, TokenAccount>,
     #[account(
         init,
         seeds = [&escrow::ESCROW_PDA_SEED, escrow_account.key.as_ref()],
@@ -124,7 +107,7 @@ pub struct Exchange<'info> {
     #[account(mut)]
     pub initializer_receive_token_account: Account<'info, TokenAccount>,
     #[account(mut)]
-    pub initializer: AccountInfo<'info>,
+    pub initializer: UncheckedAccount<'info>,
     #[account(
         mut,
         has_one = initializer,
@@ -152,7 +135,7 @@ impl EscrowAccount {
 impl<'info> InitializeEscrow<'info> {
     fn into_transfer_to_deposit(&self) -> CpiContext<'_, '_, '_, 'info, Transfer<'info>> {
         let cpi_accounts = Transfer {
-            from: self.initializer_deposit_token_account.to_account_info(),
+            from: self.initializer_token_account.to_account_info(),
             to: self.deposit_token_account.to_account_info(),
             authority: self.initializer.to_account_info(),
         };

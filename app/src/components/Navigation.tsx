@@ -9,9 +9,6 @@ const Navigation: FC = () => {
 
   return (
     <Toolbar style={{ display: 'flex' }}>
-        <div style={{flexGrow:1}}>
-            <img src="ram-logo.png" alt="RAM logo" style={{maxWidth: 150}} />
-        </div>
         <WalletMultiButton />
         {wallet && <WalletDisconnectButton startIcon={<LinkOff />} style={{ marginLeft: 8 }} />}
     </Toolbar>
