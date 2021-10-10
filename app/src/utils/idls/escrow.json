@@ -11,7 +11,7 @@
           "isSigner": true
         },
         {
-          "name": "initializerDepositTokenAccount",
+          "name": "initializerTokenAccount",
           "isMut": true,
           "isSigner": false
         },

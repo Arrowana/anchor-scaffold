@@ -13,9 +13,15 @@ import { useSnackbar } from 'notistack';
 import React, { FC, useCallback, useMemo } from 'react';
 import Navigation from './Navigation';
 
+const getCluster = (network: string) => {
+  if (network === 'localnet') return 'http://localhost:8899';
+  //return clusterApiUrl(network);
+  throw new Error('Not implemented')
+}
+
 const Wallet: FC = ({children}) => {
-  const network = WalletAdapterNetwork.Mainnet;
-  const endpoint = useMemo(() => clusterApiUrl(network), [network]);
+  const network = 'localnet'; // WalletAdapterNetwork.Devnet;
+  const endpoint = useMemo(() => getCluster(network), [network]);
 
   // @solana/wallet-adapter-wallets imports all the adapters but supports tree shaking --
   // Only the wallets you want to support will be compiled into your application
@@ -23,7 +29,9 @@ const Wallet: FC = ({children}) => {
     () => [
         getPhantomWallet(),
         getSolflareWallet(),
+        //@ts-ignore
         getSolletWallet({ network }),
+        //@ts-ignore
         getSolletExtensionWallet({ network }),
         getLedgerWallet(),
     ],
