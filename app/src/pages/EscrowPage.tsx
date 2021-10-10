@@ -7,10 +7,10 @@ import { Connection, Keypair, PublicKey, SystemProgram, SYSVAR_RENT_PUBKEY, Tran
 import { useSnackbar } from "notistack";
 import Bootstrap from "../components/Boostrap";
 import { FC, useEffect, useMemo, useState } from "react";
-import { Escrow as EscrowIdl } from "../../../target/types/escrow";
+import { Escrow as EscrowIdl } from "../utils/idls/escrow";
 import EscrowJson from "../utils/idls/escrow.json";
 
-const ESCROW_PROGRAM_ID = new PublicKey("BVn1pCovTMx6UHEVcCjXJN1h4E7KA8G6EyZtydaSzpu8");
+const ESCROW_PROGRAM_ID = new PublicKey("Fg6PaFpoGXkYsidMpWTK6W2BeZ7FEfcYkg476zPFsLnS");
 const ESCROW_PDA_SEED: string = "escrow";
 
 class StubWallet {
@@ -135,14 +135,13 @@ const CreateEscrow: FC<CreateEscrowProps> = ({program}) => {
         if (!initializerTokenAccount) {
           throw new Error('Could not find initializerTokenAccount');
         }
-
         const initializerReceiveTokenAccount = tokenAccounts?.find(({mint}) => mint.toBase58() === takerMint)?.address;
         if (!initializerReceiveTokenAccount) {
           throw new Error('Could not find initializerTokenAccount');
         }
 
         try {
-          const signature = program.rpc.initializeEscrow(
+          const signature = await program.rpc.initializeEscrow(
             new BN(depositAmount),
             new BN(takerAmount),
             {

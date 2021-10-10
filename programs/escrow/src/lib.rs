@@ -79,7 +79,7 @@ pub struct InitializeEscrow<'info> {
     pub initializer_token_account: Account<'info, TokenAccount>,
     #[account(
         init,
-        seeds = [&escrow::ESCROW_PDA_SEED, escrow_account.key.as_ref()],
+        seeds = [escrow::ESCROW_PDA_SEED, escrow_account.key.as_ref()],
         bump,
         payer = initializer,
         token::mint = deposit_mint,
