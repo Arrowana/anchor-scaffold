@@ -177,6 +177,7 @@ const Escrow: FC = () => {
 
   const program = useMemo(() => {
     const provider = new Provider(connection, wallet || STUB_WALLET, {});
+    //@ts-ignore
     return new Program<EscrowIdl>(EscrowJson as EscrowIdl, ESCROW_PROGRAM_ID, provider);
   }, [wallet]);
 
@@ -188,13 +189,15 @@ const Escrow: FC = () => {
   return (
     <>
       {escrowProgramAccounts?.map(({publicKey, account}) => {
+        const escrowAccount = account as EscrowAccount;
+
         return <Card 
           key={publicKey.toBase58()}
           title={publicKey.toBase58()}
           >
             <CardContent>
-              {account.initializer.toBase58()}
-              {account.depositAmount.toString()} for {account.takerAmount.toString()}
+              {escrowAccount.initializer.toBase58()} wants {' '}
+              {escrowAccount.depositAmount.toString()} for {escrowAccount.takerAmount.toString()}
             </CardContent>
             <CardActions>
               <IconButton>

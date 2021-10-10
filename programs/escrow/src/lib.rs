@@ -2,7 +2,7 @@ use anchor_lang::prelude::*;
 use anchor_spl::token::Mint;
 use anchor_spl::token::{self, Token, TokenAccount, Transfer};
 
-declare_id!("BVn1pCovTMx6UHEVcCjXJN1h4E7KA8G6EyZtydaSzpu8");
+declare_id!("Fg6PaFpoGXkYsidMpWTK6W2BeZ7FEfcYkg476zPFsLnS");
 
 #[program]
 pub mod escrow {
@@ -79,7 +79,7 @@ pub struct InitializeEscrow<'info> {
     pub initializer_token_account: Account<'info, TokenAccount>,
     #[account(
         init,
-        seeds = [escrow::ESCROW_PDA_SEED, escrow_account.key.as_ref()],
+        seeds = [&escrow::ESCROW_PDA_SEED, escrow_account.key.as_ref()],
         bump,
         payer = initializer,
         token::mint = deposit_mint,
